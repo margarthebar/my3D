@@ -107,4 +107,6 @@ translate
 250 350 0
 apply
 display
+save
+3d.png
 quit

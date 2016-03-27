@@ -89,7 +89,7 @@ void parse_file ( char * filename,
   while ( fgets(line, 255, f) != NULL ) {
     line[strlen(line)-1]='\0';
     //printf(":%s:\n",line);
-    double x, y, z, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4;
+    double x, y, z, x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, w, h, d;
    
     
     if ( strncmp(line, "line", strlen(line)) == 0 ) {
@@ -127,15 +127,23 @@ void parse_file ( char * filename,
     else if( strncmp(line, "box", strlen(line)) == 0 ){
       printf("BOX\n");
       fgets(line, 255, f);
-      sscanf(line, "%lf %lf %lf %lf %lf %lf %lf",
-	     &pm, &x, &y, &z, &w, &h, &d);
+      sscanf(line, "%lf %lf %lf %lf %lf %lf", &x, &y, &z, &w, &h, &d);
       add_box(pm, x, y, z, w, h, d);
+      printf("%lf %lf %lf %lf %lf %lf\n", x, y, z, w, h, d);
     }
     else if( strncmp(line, "sphere", strlen(line)) == 0 ){
-      printf("sphere command");
+      printf("SPHERE\n");
+      fgets(line, 255, f);
+      sscanf(line, "%lf %lf %lf", &x, &y, &z);
+      add_sphere(pm, x, y, z, 1);
+      printf("%lf %lf %lf\n", x, y, z);
     }
     else if( strncmp(line, "torus", strlen(line)) == 0 ){
-      printf("torus command");
+      printf("TORUS\n");
+      fgets(line, 255, f);
+      sscanf(line, "%lf %lf %lf %lf", &x, &y, &x1, &y1);
+      add_torus(pm, x, y, x1, y1, 1);
+      printf("%lf %lf %lf %lf\n", x, y, x1, y1);
     }
     else if ( strncmp(line, "scale", strlen(line)) == 0 ) {
       //printf("SCALE\n");
@@ -191,7 +199,8 @@ void parse_file ( char * filename,
     else if ( strncmp(line, "display", strlen(line)) == 0 ) {
       clear_screen(s);
       draw_lines(pm, s, g);
-      display(s);
+      //display(s);
+      //printf("Display does not work on my computer\n");
     }
     else if ( strncmp(line, "save", strlen(line)) == 0 ) {
       fgets(line, 255, f);
@@ -201,13 +210,24 @@ void parse_file ( char * filename,
       save_extension(s, line);
     }
     else if ( strncmp(line, "quit", strlen(line)) == 0 ) {
+      printf("QUIT\n");
       return;
+    }
+    else if ( strncmp(line, "#", 1) == 0 ) {
+      //comment; do nothing
+    }
+    else if( strncmp(line, "clear", strlen(line)) == 0 ) {
+      printf("CLEAR\n");
+      //free_matrix(pm);
+      pm = new_matrix(4,4);
+      print_matrix(pm);
     }
     else {
       printf("Invalid command\n");
     }
   }
-  
+
+  printf("DONE\n");
   free_matrix(tmp);
   fclose(f);
   //printf("END PARSE\n");
